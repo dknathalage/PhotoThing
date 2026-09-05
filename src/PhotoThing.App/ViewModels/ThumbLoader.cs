@@ -17,9 +17,13 @@ public sealed class ThumbLoader
     {
         var local = Path.Combine(_cacheDir, hash + ".jpg");
         if (File.Exists(local)) return local;
-        await using var src = await _store.GetAsync(ObjectNames.Thumb(hash), ct);
-        await using var dst = File.Create(local);
-        await src.CopyToAsync(dst, ct);
+
+        // Download to a temp file then move into place, so a failed download
+        // never leaves a truncated file in the cache.
+        var temp = Path.Combine(_cacheDir, hash + ".jpg.tmp");
+        await using (var dst = File.Create(temp))
+            await _store.GetToAsync(ObjectNames.Thumb(hash), dst, ct);
+        File.Move(temp, local, overwrite: true);
         return local;
     }
 }

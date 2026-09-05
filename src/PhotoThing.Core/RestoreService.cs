@@ -17,8 +17,7 @@ public sealed class RestoreService
         var outPath = Path.Combine(destinationDir, file.RelativePath.Replace('/', Path.DirectorySeparatorChar));
         Directory.CreateDirectory(Path.GetDirectoryName(outPath)!);
 
-        await using var src = await _store.GetAsync(ObjectNames.Blob(file.Hash), ct);
         await using var dst = File.Create(outPath);
-        await src.CopyToAsync(dst, ct);
+        await _store.GetToAsync(ObjectNames.Blob(file.Hash), dst, ct);
     }
 }

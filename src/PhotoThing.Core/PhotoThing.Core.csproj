@@ -10,7 +10,10 @@
     <PackageReference Include="Google.Cloud.Storage.V1" Version="4.15.0" />
     <PackageReference Include="MetadataExtractor" Version="2.9.3" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.11" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="4.1.1" />
+    <!-- Pinned to the 2.x line (Apache-2.0). 3.x+ moved to the Six Labors Split
+         License, which emits a build-time license nag; 2.x avoids that and the
+         licensing ambiguity for a personal/OSS tool. -->
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.11" />
   </ItemGroup>
 
 </Project>

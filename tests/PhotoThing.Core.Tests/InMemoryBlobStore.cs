@@ -26,6 +26,13 @@ public sealed class InMemoryBlobStore : IBlobStore
             ? Task.FromResult<Stream>(new MemoryStream(bytes))
             : throw new FileNotFoundException(objectName);
 
+    public async Task GetToAsync(string objectName, Stream destination, CancellationToken ct = default)
+    {
+        if (!Objects.TryGetValue(objectName, out var bytes))
+            throw new FileNotFoundException(objectName);
+        await destination.WriteAsync(bytes, ct);
+    }
+
     public Task DeleteAsync(string objectName, CancellationToken ct = default)
     {
         Objects.TryRemove(objectName, out _);

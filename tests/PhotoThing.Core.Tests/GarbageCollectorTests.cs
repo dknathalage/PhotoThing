@@ -31,6 +31,7 @@ public class GarbageCollectorTests
         (await store.ExistsAsync(ObjectNames.Blob(hash))).Should().BeFalse();
         (await store.ExistsAsync(ObjectNames.Thumb(hash))).Should().BeFalse();
         (await idx.GetBlobAsync(hash)).Should().BeNull();
+        (await idx.GetThumbAsync(hash)).Should().BeNull(); // thumb row cleaned up too
         (await store.ExistsAsync(ObjectNames.Blob(keep))).Should().BeTrue();
     }
 }

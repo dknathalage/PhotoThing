@@ -19,6 +19,16 @@ public class InMemoryBlobStoreTests
     }
 
     [Fact]
+    public async Task GetTo_writes_object_bytes_into_destination()
+    {
+        var store = new InMemoryBlobStore();
+        await store.PutAsync("blobs/x", new MemoryStream(Encoding.ASCII.GetBytes("payload")), "b");
+        using var dest = new MemoryStream();
+        await store.GetToAsync("blobs/x", dest);
+        Encoding.ASCII.GetString(dest.ToArray()).Should().Be("payload");
+    }
+
+    [Fact]
     public async Task List_filters_by_prefix()
     {
         var store = new InMemoryBlobStore();

@@ -1,4 +1,3 @@
-using System.Text;
 using FluentAssertions;
 using PhotoThing.Core;
 using PhotoThing.Core.Thumbnails;

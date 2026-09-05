@@ -87,6 +87,10 @@ public sealed class BackupService
 
     private async Task<int> SoftDeleteUnseenAsync(string root, DateTimeOffset now, CancellationToken ct)
     {
+        // Files touched this run were stamped last_seen = now. This query uses a
+        // strict `last_seen < now`, so it returns only files NOT seen this run —
+        // never one we just backed up. (Relies on GetActiveFilesNotSeenSinceAsync
+        // being strict `<`; a change to `<=` would soft-delete same-run files.)
         var stale = await _index.GetActiveFilesNotSeenSinceAsync(root, now);
         foreach (var f in stale)
         {

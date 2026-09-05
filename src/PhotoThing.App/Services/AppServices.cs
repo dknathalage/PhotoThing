@@ -30,7 +30,7 @@ public sealed class AppServices : IAsyncDisposable
     public static async Task<AppServices> CreateAsync(AppSettings s, CancellationToken ct = default)
     {
         var index = await IndexStore.OpenAsync(SettingsPaths.IndexDb);
-        var store = await GcsBlobStore.CreateAsync(s.BucketName, s.ProjectId, ct);
+        var store = await GcsBlobStore.CreateAsync(s.BucketName, ct);
         return new AppServices(s, index, store);
     }
 
@@ -51,7 +51,7 @@ public static class Preflight
         GcsBlobStore? store = null;
         try
         {
-            store = await GcsBlobStore.CreateAsync(s.BucketName, s.ProjectId, ct);
+            store = await GcsBlobStore.CreateAsync(s.BucketName, ct);
             adc = true;
             // A cheap list confirms bucket access.
             await foreach (var _ in store.ListAsync("index/", ct)) break;

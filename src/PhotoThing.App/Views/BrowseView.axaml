@@ -18,6 +18,11 @@
     </StackPanel>
 
     <Border Classes="card" Margin="0,16,0,0" Padding="10">
+      <Grid>
+      <TextBlock IsVisible="{Binding IsEmpty}" Classes="muted"
+                 HorizontalAlignment="Center" VerticalAlignment="Center"
+                 TextAlignment="Center"
+                 Text="Nothing here yet.&#x0a;Run a backup, then click Load library."/>
       <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}"
                Background="Transparent" BorderThickness="0">
         <ListBox.ItemsPanel>
@@ -40,6 +45,7 @@
           </DataTemplate>
         </ListBox.ItemTemplate>
       </ListBox>
+      </Grid>
     </Border>
   </DockPanel>
 </UserControl>

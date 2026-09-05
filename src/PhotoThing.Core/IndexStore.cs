@@ -224,6 +224,9 @@ public sealed class IndexStore : IAsyncDisposable, IDisposable
             r.IsDBNull(3) ? null : DateTimeOffset.Parse(r.GetString(3)));
     }
 
+    public async Task DeleteThumbAsync(string hash) =>
+        await ExecAsync("DELETE FROM thumbs WHERE hash=$h", ("$h", hash));
+
     public void Dispose() => _conn.Dispose();
     public async ValueTask DisposeAsync() => await _conn.DisposeAsync();
 }

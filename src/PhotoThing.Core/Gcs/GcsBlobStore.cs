@@ -23,11 +23,12 @@ public sealed class GcsBlobStore : IBlobStore, IDisposable
     }
 
     /// <summary>
-    /// Build a GcsBlobStore using Application Default Credentials.
+    /// Build a GcsBlobStore using Application Default Credentials. The GCP
+    /// project is inferred from the credentials; our object and bucket-patch
+    /// operations address the bucket by name and need no explicit project.
     /// </summary>
     public static async Task<GcsBlobStore> CreateAsync(
         string bucket,
-        string? projectId = null,
         CancellationToken ct = default)
     {
         var credential = await GoogleCredential.GetApplicationDefaultAsync(ct);
@@ -76,6 +77,13 @@ public sealed class GcsBlobStore : IBlobStore, IDisposable
         await _client.DownloadObjectAsync(_bucket, objectName, ms, cancellationToken: ct);
         ms.Position = 0;
         return ms;
+    }
+
+    /// <inheritdoc />
+    public async Task GetToAsync(string objectName, Stream destination, CancellationToken ct = default)
+    {
+        // Streams straight into the destination — no full-payload buffer in RAM.
+        await _client.DownloadObjectAsync(_bucket, objectName, destination, cancellationToken: ct);
     }
 
     /// <inheritdoc />

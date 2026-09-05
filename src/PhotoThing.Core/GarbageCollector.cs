@@ -19,6 +19,7 @@ public sealed class GarbageCollector
             await _store.DeleteAsync(ObjectNames.Blob(blob.Hash), ct);
             await _store.DeleteAsync(ObjectNames.Thumb(blob.Hash), ct);
             await _index.DeleteBlobAsync(blob.Hash);
+            await _index.DeleteThumbAsync(blob.Hash);
         }
         return candidates.Count;
     }
