@@ -3,13 +3,29 @@
              xmlns:vm="clr-namespace:PhotoThing.App.ViewModels"
              x:Class="PhotoThing.App.Views.BackupView"
              x:DataType="vm:BackupViewModel">
-  <DockPanel Margin="16">
-    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12">
-      <Button Content="Run backup" Command="{Binding RunBackupCommand}"/>
-      <ProgressBar IsIndeterminate="{Binding IsRunning}" Width="160"
-                   IsVisible="{Binding IsRunning}"/>
-      <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"/>
+  <DockPanel Margin="28,24">
+
+    <StackPanel DockPanel.Dock="Top" Spacing="16">
+      <StackPanel Spacing="3">
+        <TextBlock Text="Backup" Classes="title"/>
+        <TextBlock Text="Scan your folders and archive anything new or changed." Classes="muted"/>
+      </StackPanel>
+
+      <Border Classes="card">
+        <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+          <Button Content="Run backup" Classes="accent" Command="{Binding RunBackupCommand}"/>
+          <ProgressBar IsIndeterminate="{Binding IsRunning}" Width="200"
+                       IsVisible="{Binding IsRunning}" VerticalAlignment="Center"/>
+          <TextBlock Text="{Binding Summary}" Classes="muted"
+                     VerticalAlignment="Center" TextWrapping="Wrap"/>
+        </StackPanel>
+      </Border>
+
+      <TextBlock Text="Activity" Classes="h2" Margin="2,4,0,0"/>
     </StackPanel>
-    <ListBox ItemsSource="{Binding Log}" Margin="0,12,0,0"/>
+
+    <Border Classes="card" Margin="0,10,0,0" Padding="8">
+      <ListBox ItemsSource="{Binding Log}" Background="Transparent" BorderThickness="0"/>
+    </Border>
   </DockPanel>
 </UserControl>

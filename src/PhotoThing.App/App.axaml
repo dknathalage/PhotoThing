@@ -2,14 +2,95 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="PhotoThing.App.App"
              xmlns:local="using:PhotoThing.App"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+             RequestedThemeVariant="Dark">
 
     <Application.DataTemplates>
         <local:ViewLocator />
     </Application.DataTemplates>
 
+    <Application.Resources>
+        <!-- Palette: a photographer's dark room with a cold-storage cyan accent -->
+        <Color x:Key="BgColor">#14161B</Color>
+        <Color x:Key="SurfaceColor">#1C1F27</Color>
+        <Color x:Key="Surface2Color">#242833</Color>
+        <Color x:Key="HairlineColor">#333947</Color>
+        <Color x:Key="TextColor">#E9ECF1</Color>
+        <Color x:Key="MutedColor">#98A0AE</Color>
+        <Color x:Key="AccentColor">#57C4DA</Color>
+
+        <SolidColorBrush x:Key="BgBrush" Color="{StaticResource BgColor}"/>
+        <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}"/>
+        <SolidColorBrush x:Key="Surface2Brush" Color="{StaticResource Surface2Color}"/>
+        <SolidColorBrush x:Key="HairlineBrush" Color="{StaticResource HairlineColor}"/>
+        <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextColor}"/>
+        <SolidColorBrush x:Key="MutedBrush" Color="{StaticResource MutedColor}"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
+
+        <!-- Steer Fluent's accent (progress, selection, accent buttons) to our cyan -->
+        <Color x:Key="SystemAccentColor">#57C4DA</Color>
+        <Color x:Key="SystemAccentColorDark1">#49B2C9</Color>
+        <Color x:Key="SystemAccentColorDark2">#3D9DB3</Color>
+        <Color x:Key="SystemAccentColorDark3">#31889D</Color>
+        <Color x:Key="SystemAccentColorLight1">#74CFE1</Color>
+        <Color x:Key="SystemAccentColorLight2">#90DAE8</Color>
+        <Color x:Key="SystemAccentColorLight3">#ACE5EF</Color>
+
+        <CornerRadius x:Key="ControlCornerRadius">8</CornerRadius>
+        <CornerRadius x:Key="OverlayCornerRadius">10</CornerRadius>
+    </Application.Resources>
+
     <Application.Styles>
         <FluentTheme />
+
+        <!-- Typography -->
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+        <Style Selector="TextBlock.h1">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style Selector="TextBlock.title">
+            <Setter Property="FontSize" Value="19"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style Selector="TextBlock.h2">
+            <Setter Property="FontSize" Value="13.5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style Selector="TextBlock.muted">
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <!-- Card container -->
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource HairlineBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="20"/>
+        </Style>
+
+        <!-- Left nav rail tabs -->
+        <Style Selector="TabControl">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="TabItem">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Padding" Value="14,10"/>
+            <Setter Property="Margin" Value="8,2"/>
+            <Setter Property="MinHeight" Value="0"/>
+            <Setter Property="MinWidth" Value="150"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+
+        <!-- Inputs -->
+        <Style Selector="TextBox">
+            <Setter Property="Padding" Value="10,8"/>
+        </Style>
     </Application.Styles>
 </Application>

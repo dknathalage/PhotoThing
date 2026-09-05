@@ -4,37 +4,76 @@
              x:Class="PhotoThing.App.Views.SettingsView"
              x:DataType="vm:SettingsViewModel">
   <ScrollViewer>
-    <StackPanel Margin="16" Spacing="8">
-      <TextBlock Text="Google Cloud" FontWeight="Bold"/>
-      <TextBox PlaceholderText="Project ID (optional)" Text="{Binding ProjectId}"/>
-      <TextBox PlaceholderText="Bucket name" Text="{Binding BucketName}"/>
-      <TextBox PlaceholderText="ffmpeg path" Text="{Binding FfmpegPath}"/>
+    <StackPanel Margin="28,24" Spacing="16" MaxWidth="660" HorizontalAlignment="Left">
 
-      <TextBlock Text="Source folders" FontWeight="Bold" Margin="0,12,0,0"/>
-      <ListBox x:Name="SourceRootsList" ItemsSource="{Binding SourceRoots}" Height="120"/>
+      <StackPanel Spacing="3">
+        <TextBlock Text="Settings" Classes="title"/>
+        <TextBlock Text="Where your archive lives, and what gets backed up." Classes="muted"/>
+      </StackPanel>
+
+      <!-- Destination -->
+      <Border Classes="card">
+        <StackPanel Spacing="14">
+          <TextBlock Text="Destination" Classes="h2"/>
+          <StackPanel Spacing="6">
+            <TextBlock Text="Bucket name" Classes="muted"/>
+            <TextBox Text="{Binding BucketName}" PlaceholderText="my-photo-archive"/>
+          </StackPanel>
+          <StackPanel Spacing="6">
+            <TextBlock Text="Google Cloud project (optional)" Classes="muted"/>
+            <TextBox Text="{Binding ProjectId}" PlaceholderText="Inferred from your login if left blank"/>
+          </StackPanel>
+          <StackPanel Spacing="6">
+            <TextBlock Text="ffmpeg path" Classes="muted"/>
+            <TextBox Text="{Binding FfmpegPath}" PlaceholderText="ffmpeg"/>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- Folders -->
+      <Border Classes="card">
+        <StackPanel Spacing="14">
+          <TextBlock Text="Folders to back up" Classes="h2"/>
+          <Border Background="{StaticResource Surface2Brush}" CornerRadius="8"
+                  BorderBrush="{StaticResource HairlineBrush}" BorderThickness="1">
+            <ListBox x:Name="SourceRootsList" ItemsSource="{Binding SourceRoots}"
+                     Background="Transparent" BorderThickness="0" Height="150"/>
+          </Border>
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBox x:Name="NewFolderBox" PlaceholderText="/Users/you/Pictures" Width="380"/>
+            <Button Content="Add" Classes="accent"
+                    Command="{Binding AddFolderCommand}"
+                    CommandParameter="{Binding #NewFolderBox.Text}"/>
+            <Button Content="Remove"
+                    Command="{Binding RemoveFolderCommand}"
+                    CommandParameter="{Binding #SourceRootsList.SelectedItem}"/>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- Retention & tiering -->
+      <Border Classes="card">
+        <StackPanel Spacing="14">
+          <TextBlock Text="Retention &amp; tiering" Classes="h2"/>
+          <Grid ColumnDefinitions="*,*">
+            <StackPanel Grid.Column="0" Spacing="6" Margin="0,0,10,0">
+              <TextBlock Text="Keep deleted files for (days)" Classes="muted"/>
+              <NumericUpDown Value="{Binding GracePeriodDays}" Minimum="0"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="6" Margin="10,0,0,0">
+              <TextBlock Text="Move to Archive after (days)" Classes="muted"/>
+              <NumericUpDown Value="{Binding ArchiveAfterDays}" Minimum="1"/>
+            </StackPanel>
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <!-- Actions -->
       <StackPanel Orientation="Horizontal" Spacing="8">
-        <TextBox x:Name="NewFolderBox" PlaceholderText="/path/to/photos" Width="320"/>
-        <Button Content="Add"
-                Command="{Binding AddFolderCommand}"
-                CommandParameter="{Binding #NewFolderBox.Text}"/>
-        <Button Content="Remove selected"
-                Command="{Binding RemoveFolderCommand}"
-                CommandParameter="{Binding #SourceRootsList.SelectedItem}"/>
+        <Button Content="Save settings" Classes="accent" Command="{Binding SaveCommand}"/>
+        <Button Content="Run checks" Command="{Binding RunPreflightCommand}"/>
       </StackPanel>
-
-      <TextBlock Text="Retention" FontWeight="Bold" Margin="0,12,0,0"/>
-      <StackPanel Orientation="Horizontal" Spacing="8">
-        <TextBlock Text="Grace days" VerticalAlignment="Center"/>
-        <NumericUpDown Value="{Binding GracePeriodDays}" Minimum="0"/>
-        <TextBlock Text="Archive after days" VerticalAlignment="Center"/>
-        <NumericUpDown Value="{Binding ArchiveAfterDays}" Minimum="1"/>
-      </StackPanel>
-
-      <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,12,0,0">
-        <Button Content="Save" Command="{Binding SaveCommand}"/>
-        <Button Content="Run preflight checks" Command="{Binding RunPreflightCommand}"/>
-      </StackPanel>
-      <TextBlock Text="{Binding StatusMessage}" Foreground="#555" TextWrapping="Wrap"/>
+      <TextBlock Text="{Binding StatusMessage}" Classes="muted" TextWrapping="Wrap"/>
     </StackPanel>
   </ScrollViewer>
 </UserControl>

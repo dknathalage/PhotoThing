@@ -4,26 +4,50 @@
         xmlns:vm="using:PhotoThing.App.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="640"
+        mc:Ignorable="d" d:DesignWidth="1040" d:DesignHeight="680"
         x:Class="PhotoThing.App.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="PhotoThing" Width="900" Height="640">
+        Background="{StaticResource BgBrush}"
+        FontFamily="Avenir Next, Helvetica Neue, sans-serif"
+        Title="PhotoThing" Width="1040" Height="680" MinWidth="820" MinHeight="560">
 
     <Design.DataContext>
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <TabControl>
-        <TabItem Header="Settings">
-            <views:SettingsView DataContext="{Binding Settings}"/>
-        </TabItem>
-        <TabItem Header="Backup">
-            <views:BackupView DataContext="{Binding Backup}"/>
-        </TabItem>
-        <TabItem Header="Browse">
-            <views:BrowseView DataContext="{Binding Browse}"/>
-        </TabItem>
-    </TabControl>
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Brand bar -->
+        <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}"
+                BorderBrush="{StaticResource HairlineBrush}" BorderThickness="0,0,0,1"
+                Padding="18,14">
+            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                <!-- aperture mark -->
+                <Border Width="30" Height="30" CornerRadius="15"
+                        BorderBrush="{StaticResource AccentBrush}" BorderThickness="2">
+                    <Ellipse Width="9" Height="9" Fill="{StaticResource AccentBrush}"
+                             HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel Spacing="0" VerticalAlignment="Center">
+                    <TextBlock Text="PhotoThing" Classes="h1"/>
+                    <TextBlock Text="Local photos &amp; video, archived to cold storage" Classes="muted"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Left nav rail + content -->
+        <TabControl Grid.Row="1" TabStripPlacement="Left" Padding="0">
+            <TabItem Header="Backup">
+                <views:BackupView DataContext="{Binding Backup}"/>
+            </TabItem>
+            <TabItem Header="Browse">
+                <views:BrowseView DataContext="{Binding Browse}"/>
+            </TabItem>
+            <TabItem Header="Settings">
+                <views:SettingsView DataContext="{Binding Settings}"/>
+            </TabItem>
+        </TabControl>
+    </Grid>
 
 </Window>
