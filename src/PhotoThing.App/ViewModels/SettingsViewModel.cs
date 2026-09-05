@@ -15,6 +15,8 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private int _archiveAfterDays = 180;
     [ObservableProperty] private string? _statusMessage;
 
+    private AppSettings _base = new(ProjectId: null, BucketName: "", SourceRoots: new List<string>());
+
     public ObservableCollection<string> SourceRoots { get; } = new();
 
     public SettingsViewModel() => TryLoad();
@@ -23,6 +25,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         if (!File.Exists(SettingsPaths.SettingsFile)) return;
         var s = AppSettings.Load(SettingsPaths.SettingsFile);
+        _base = s;
         ProjectId = s.ProjectId;
         BucketName = s.BucketName;
         FfmpegPath = s.FfmpegPath;
@@ -32,13 +35,14 @@ public partial class SettingsViewModel : ObservableObject
         foreach (var r in s.SourceRoots) SourceRoots.Add(r);
     }
 
-    public AppSettings ToSettings() => new(
-        ProjectId,
-        BucketName,
-        SourceRoots.ToList(),
-        GracePeriodDays,
-        ArchiveAfterDays,
-        FfmpegPath: FfmpegPath);
+    public AppSettings ToSettings() => _base with {
+        ProjectId = ProjectId,
+        BucketName = BucketName,
+        SourceRoots = SourceRoots.ToList(),
+        GracePeriodDays = GracePeriodDays,
+        ArchiveAfterDays = ArchiveAfterDays,
+        FfmpegPath = FfmpegPath
+    };
 
     [RelayCommand]
     private void AddFolder(string? path)

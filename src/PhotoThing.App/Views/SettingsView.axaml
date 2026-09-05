@@ -11,12 +11,15 @@
       <TextBox PlaceholderText="ffmpeg path" Text="{Binding FfmpegPath}"/>
 
       <TextBlock Text="Source folders" FontWeight="Bold" Margin="0,12,0,0"/>
-      <ListBox ItemsSource="{Binding SourceRoots}" Height="120"/>
+      <ListBox x:Name="SourceRootsList" ItemsSource="{Binding SourceRoots}" Height="120"/>
       <StackPanel Orientation="Horizontal" Spacing="8">
         <TextBox x:Name="NewFolderBox" PlaceholderText="/path/to/photos" Width="320"/>
         <Button Content="Add"
                 Command="{Binding AddFolderCommand}"
                 CommandParameter="{Binding #NewFolderBox.Text}"/>
+        <Button Content="Remove selected"
+                Command="{Binding RemoveFolderCommand}"
+                CommandParameter="{Binding #SourceRootsList.SelectedItem}"/>
       </StackPanel>
 
       <TextBlock Text="Retention" FontWeight="Bold" Margin="0,12,0,0"/>
