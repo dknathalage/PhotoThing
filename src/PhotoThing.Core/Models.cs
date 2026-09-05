@@ -39,3 +39,7 @@ public sealed record ThumbRecord(
     bool Ready,
     string? GcsObject,
     DateTimeOffset? GeneratedAt);
+
+/// Dashboard snapshot: active files, unique blobs, blobs old enough to be in the
+/// Archive tier, and total stored bytes.
+public sealed record LibraryStats(int Files, int Blobs, int ArchivedBlobs, long Bytes);

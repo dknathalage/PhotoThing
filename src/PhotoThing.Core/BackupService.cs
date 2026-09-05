@@ -4,6 +4,9 @@ namespace PhotoThing.Core;
 
 public sealed record BackupResult(int Uploaded, int Deduped, int Skipped, int SoftDeleted);
 
+/// Progress for one source root: how many files have been processed of the total.
+public sealed record BackupProgress(int Processed, int Total, string CurrentFile);
+
 public sealed class BackupService
 {
     private readonly IndexStore _index;
@@ -20,14 +23,20 @@ public sealed class BackupService
         _meta = meta; _scanner = scanner; _graceDays = gracePeriodDays;
     }
 
-    public async Task<BackupResult> BackupAsync(string sourceRoot, DateTimeOffset now, CancellationToken ct = default)
+    public async Task<BackupResult> BackupAsync(string sourceRoot, DateTimeOffset now,
+        CancellationToken ct = default, IProgress<BackupProgress>? progress = null)
     {
         var root = Path.GetFullPath(sourceRoot);
         int uploaded = 0, deduped = 0, skipped = 0, softDeleted = 0;
 
-        foreach (var file in _scanner.Scan(root))
+        var files = _scanner.Scan(root).ToList();
+        var total = files.Count;
+        var processed = 0;
+
+        foreach (var file in files)
         {
             ct.ThrowIfCancellationRequested();
+            progress?.Report(new BackupProgress(processed, total, file.RelativePath));
 
             var existing = await _index.GetActiveFileAsync(root, file.RelativePath);
             if (existing is not null && existing.Size == file.Size && existing.ModifiedUtc == file.ModifiedUtc)
@@ -63,7 +72,10 @@ public sealed class BackupService
             await _index.UpsertFileAsync(new FileRecord(
                 0, root, file.RelativePath, hash, file.Size, file.ModifiedUtc,
                 _meta.GetCaptureDate(file), FileState.Active, null, now));
+
+            processed++;
         }
+        progress?.Report(new BackupProgress(processed, total, ""));
 
         softDeleted = await SoftDeleteUnseenAsync(root, now, ct);
         return new BackupResult(uploaded, deduped, skipped, softDeleted);

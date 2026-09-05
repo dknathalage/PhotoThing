@@ -9,7 +9,10 @@ namespace PhotoThing.App.ViewModels;
 public partial class BackupViewModel : ObservableObject
 {
     [ObservableProperty] private bool _isRunning;
-    [ObservableProperty] private string _summary = "";
+    [ObservableProperty] private string _summary = "Idle";
+    [ObservableProperty] private string _statusText = "";
+    [ObservableProperty] private double _progressValue;
+    [ObservableProperty] private double _progressMax = 1;
     public ObservableCollection<string> Log { get; } = new();
 
     [RelayCommand(CanExecute = nameof(CanRun))]
@@ -17,6 +20,8 @@ public partial class BackupViewModel : ObservableObject
     {
         IsRunning = true;
         Log.Clear();
+        ProgressValue = 0;
+        StatusText = "Starting…";
         try
         {
             var settings = AppSettings.Load(SettingsPaths.SettingsFile);
@@ -24,14 +29,24 @@ public partial class BackupViewModel : ObservableObject
             var now = DateTimeOffset.UtcNow;
             int up = 0, dd = 0, sk = 0, del = 0;
 
+            var progress = new Progress<BackupProgress>(p =>
+            {
+                ProgressMax = System.Math.Max(1, p.Total);
+                ProgressValue = p.Processed;
+                StatusText = p.Total == 0
+                    ? "Scanning…"
+                    : $"{p.Processed}/{p.Total}" + (string.IsNullOrEmpty(p.CurrentFile) ? "" : $" · {p.CurrentFile}");
+            });
+
             foreach (var root in settings.SourceRoots)
             {
                 Log.Add($"Backing up {root}…");
-                var r = await svc.Backup.BackupAsync(root, now);
+                var r = await svc.Backup.BackupAsync(root, now, progress: progress);
                 up += r.Uploaded; dd += r.Deduped; sk += r.Skipped; del += r.SoftDeleted;
                 Log.Add($"  +{r.Uploaded} new, {r.Deduped} deduped, {r.Skipped} unchanged, {r.SoftDeleted} removed");
             }
 
+            StatusText = "Finalizing…";
             var stamp = now.ToString("yyyyMMdd'T'HHmmss'Z'");
             await svc.Backup.SnapshotIndexAsync(SettingsPaths.IndexDb, stamp);
             Log.Add("Index snapshot uploaded.");
@@ -42,14 +57,18 @@ public partial class BackupViewModel : ObservableObject
             var collected = await svc.Gc.CollectAsync(now);
             Log.Add($"Garbage-collected {collected} expired blob(s).");
 
-            Summary = $"Done: +{up} new, {dd} deduped, {sk} unchanged, {del} removed, {collected} GC'd.";
+            Summary = $"+{up} new · {dd} deduped · {sk} unchanged · {del} removed";
         }
         catch (Exception e)
         {
             Log.Add($"ERROR: {e.Message}");
-            Summary = "Backup failed.";
+            Summary = "Backup failed — open Backup for details.";
         }
-        finally { IsRunning = false; }
+        finally
+        {
+            IsRunning = false;
+            StatusText = "";
+        }
     }
 
     private bool CanRun() => !IsRunning;

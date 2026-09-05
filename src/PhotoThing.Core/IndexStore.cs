@@ -227,6 +227,21 @@ public sealed class IndexStore : IAsyncDisposable, IDisposable
     public async Task DeleteThumbAsync(string hash) =>
         await ExecAsync("DELETE FROM thumbs WHERE hash=$h", ("$h", hash));
 
+    // ---- stats ----
+    /// Snapshot counts for the dashboard. `archiveBefore` is the age cutoff: blobs
+    /// uploaded before it are (or will soon be) in the Archive tier per the
+    /// lifecycle rule. ISO-8601 "O" strings sort chronologically, so a text
+    /// comparison is a valid age filter.
+    public async Task<LibraryStats> GetLibraryStatsAsync(DateTimeOffset archiveBefore)
+    {
+        var files = Convert.ToInt32(await ScalarAsync("SELECT COUNT(*) FROM files WHERE state='Active'"));
+        var blobs = Convert.ToInt32(await ScalarAsync("SELECT COUNT(*) FROM blobs"));
+        var bytes = Convert.ToInt64(await ScalarAsync("SELECT COALESCE(SUM(size),0) FROM blobs"));
+        var archived = Convert.ToInt32(await ScalarAsync(
+            "SELECT COUNT(*) FROM blobs WHERE uploaded_at < $t", ("$t", Iso(archiveBefore))));
+        return new LibraryStats(files, blobs, archived, bytes);
+    }
+
     public void Dispose() => _conn.Dispose();
     public async ValueTask DisposeAsync() => await _conn.DisposeAsync();
 }

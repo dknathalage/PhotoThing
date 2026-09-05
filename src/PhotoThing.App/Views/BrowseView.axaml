@@ -10,24 +10,16 @@
                TextAlignment="Center"
                Text="Nothing here yet.&#x0a;Add folders and a bucket in Settings, then run a Backup."/>
 
-    <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}"
-             Background="Transparent" BorderThickness="0" Padding="14">
+    <ListBox Classes="photos" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}"
+             Background="Transparent" BorderThickness="0" Padding="10">
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate>
       </ListBox.ItemsPanel>
       <ListBox.ItemTemplate>
         <DataTemplate x:DataType="vm:PhotoItem">
-          <Border Width="164" Margin="6" CornerRadius="10"
-                  Background="{StaticResource Surface2Brush}"
-                  BorderBrush="{StaticResource HairlineBrush}" BorderThickness="1"
-                  ClipToBounds="True">
-            <StackPanel>
-              <Image Source="{Binding Thumb}" Width="162" Height="140" Stretch="UniformToFill"/>
-              <StackPanel Margin="10,8" Spacing="2">
-                <TextBlock Text="{Binding Title}" FontSize="12" TextTrimming="CharacterEllipsis"/>
-                <TextBlock Text="{Binding DateText}" Classes="muted" FontSize="11"/>
-              </StackPanel>
-            </StackPanel>
+          <Border Classes="tile" Width="152" Height="152" Margin="3"
+                  CornerRadius="6" BorderThickness="2.5" ClipToBounds="True">
+            <Image Source="{Binding Thumb}" Stretch="UniformToFill"/>
           </Border>
         </DataTemplate>
       </ListBox.ItemTemplate>

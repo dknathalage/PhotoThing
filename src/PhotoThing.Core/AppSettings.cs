@@ -10,7 +10,8 @@ public sealed record AppSettings(
     int ArchiveAfterDays = 180,
     int ThumbnailMaxEdge = 512,
     int MaxParallelUploads = 4,
-    string FfmpegPath = "ffmpeg")
+    string FfmpegPath = "ffmpeg",
+    int SyncIntervalMinutes = 60)
 {
     private static readonly JsonSerializerOptions Opts = new() { WriteIndented = true };
 

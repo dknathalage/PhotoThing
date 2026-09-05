@@ -21,6 +21,8 @@ public partial class BrowseViewModel : ObservableObject
     [ObservableProperty] private PhotoItem? _selectedItem;
     [ObservableProperty] private string? _statusMessage;
     [ObservableProperty] private bool _isEmpty = true;
+    [ObservableProperty] private string _localStatus = "—";
+    [ObservableProperty] private string _archiveStatus = "—";
     public ObservableCollection<PhotoItem> Items { get; } = new();
 
     [RelayCommand]
@@ -35,6 +37,8 @@ public partial class BrowseViewModel : ObservableObject
         {
             IsEmpty = true;
             StatusMessage = "Open Settings to add a bucket and folders.";
+            LocalStatus = "Not configured";
+            ArchiveStatus = "—";
             return;
         }
 
@@ -56,12 +60,31 @@ public partial class BrowseViewModel : ObservableObject
                 catch { /* leave thumb null if unavailable */ }
             }
             StatusMessage = Items.Count == 0 ? "No photos archived yet." : $"{Items.Count} photos";
+
+            var archiveBefore = DateTimeOffset.UtcNow.AddDays(-settings.ArchiveAfterDays);
+            var stats = await svc.Index.GetLibraryStatsAsync(archiveBefore);
+            var folders = settings.SourceRoots.Count;
+            LocalStatus = $"{stats.Files} file{Plural(stats.Files)} · {folders} folder{Plural(folders)} · {HumanBytes(stats.Bytes)}";
+            ArchiveStatus = $"{stats.ArchivedBlobs} in Archive · {stats.Blobs - stats.ArchivedBlobs} Standard";
         }
         catch (Exception e)
         {
             StatusMessage = $"Couldn't load library: {e.Message}";
+            LocalStatus = "Unavailable";
+            ArchiveStatus = "Unavailable";
         }
         IsEmpty = Items.Count == 0;
+    }
+
+    private static string Plural(int n) => n == 1 ? "" : "s";
+
+    private static string HumanBytes(long bytes)
+    {
+        string[] units = { "B", "KB", "MB", "GB", "TB" };
+        double v = bytes;
+        var u = 0;
+        while (v >= 1024 && u < units.Length - 1) { v /= 1024; u++; }
+        return u == 0 ? $"{bytes} B" : $"{v:0.#} {units[u]}";
     }
 
     [RelayCommand]

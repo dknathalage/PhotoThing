@@ -12,12 +12,18 @@
       </StackPanel>
 
       <Border Classes="card">
-        <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
-          <Button Content="Run backup" Classes="accent" Command="{Binding RunBackupCommand}"/>
-          <ProgressBar IsIndeterminate="{Binding IsRunning}" Width="200"
-                       IsVisible="{Binding IsRunning}" VerticalAlignment="Center"/>
-          <TextBlock Text="{Binding Summary}" Classes="muted"
-                     VerticalAlignment="Center" TextWrapping="Wrap"/>
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+            <Button Content="Run backup" Classes="accent" Command="{Binding RunBackupCommand}"/>
+            <TextBlock Text="{Binding Summary}" Classes="muted"
+                       VerticalAlignment="Center" TextWrapping="Wrap"
+                       IsVisible="{Binding !IsRunning}"/>
+            <TextBlock Text="{Binding StatusText}" Classes="muted"
+                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                       IsVisible="{Binding IsRunning}"/>
+          </StackPanel>
+          <ProgressBar Minimum="0" Maximum="{Binding ProgressMax}" Value="{Binding ProgressValue}"
+                       Height="8" IsVisible="{Binding IsRunning}"/>
         </StackPanel>
       </Border>
 

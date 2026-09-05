@@ -4,21 +4,21 @@
         xmlns:vm="using:PhotoThing.App.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="1040" d:DesignHeight="680"
+        mc:Ignorable="d" d:DesignWidth="1080" d:DesignHeight="720"
         x:Class="PhotoThing.App.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Background="{StaticResource BgBrush}"
         FontFamily="Avenir Next, Helvetica Neue, sans-serif"
-        Title="PhotoThing" Width="1080" Height="720" MinWidth="820" MinHeight="560">
+        Title="PhotoThing" Width="1120" Height="760" MinWidth="860" MinHeight="600">
 
     <Design.DataContext>
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto,*">
+    <Grid RowDefinitions="Auto,Auto,*">
 
-        <!-- Top bar: brand on the left, actions on the right -->
+        <!-- Brand bar -->
         <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}"
                 BorderBrush="{StaticResource HairlineBrush}" BorderThickness="0,0,0,1"
                 Padding="18,12">
@@ -30,49 +30,78 @@
                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <TextBlock Text="PhotoThing" Classes="h1" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding Browse.StatusMessage}" Classes="muted"
-                               VerticalAlignment="Center" Margin="6,0,0,0"/>
                 </StackPanel>
-
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                     <Button Content="Restore" Command="{Binding Browse.RestoreSelectedCommand}"/>
                     <Button Content="Refresh" Command="{Binding Browse.LoadCommand}"/>
-                    <Button Content="Backup" Classes="accent" Command="{Binding ShowBackupCommand}"/>
-                    <Button Content="Settings" Command="{Binding ShowSettingsCommand}"/>
+                    <!-- Backup &amp; Settings live in the menu-bar tray icon -->
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Main content: the photo grid, with Backup/Settings as overlay panels -->
-        <Grid Grid.Row="1">
-            <views:BrowseView DataContext="{Binding Browse}"/>
+        <!-- Status strip: Backup · Archive · Local -->
+        <Border Grid.Row="1" Padding="18,14">
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                <!-- Backup -->
+                <Border Classes="stat" Grid.Column="0">
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Backup" Classes="stat-label"/>
+                        <TextBlock Text="{Binding Backup.Summary}" Classes="stat-value"
+                                   TextTrimming="CharacterEllipsis"
+                                   IsVisible="{Binding !Backup.IsRunning}"/>
+                        <StackPanel Spacing="6" IsVisible="{Binding Backup.IsRunning}">
+                            <TextBlock Text="{Binding Backup.StatusText}" Classes="stat-value"
+                                       TextTrimming="CharacterEllipsis"/>
+                            <ProgressBar Minimum="0" Maximum="{Binding Backup.ProgressMax}"
+                                         Value="{Binding Backup.ProgressValue}" Height="6"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <!-- Archive -->
+                <Border Classes="stat" Grid.Column="1">
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Archive (cold storage)" Classes="stat-label"/>
+                        <TextBlock Text="{Binding Browse.ArchiveStatus}" Classes="stat-value"
+                                   TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                </Border>
+                <!-- Local -->
+                <Border Classes="stat" Grid.Column="2">
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Local" Classes="stat-label"/>
+                        <TextBlock Text="{Binding Browse.LocalStatus}" Classes="stat-value"
+                                   TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
 
-            <!-- Dim backdrop + centered panel -->
-            <Border IsVisible="{Binding IsPanelOpen}" Background="#B4000000">
-                <Grid>
-                    <!-- Backup panel -->
-                    <Border Classes="card" IsVisible="{Binding ShowBackupPanel}" Padding="0"
-                            MaxWidth="820" MaxHeight="620" Margin="28"
-                            HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Grid>
-                            <views:BackupView DataContext="{Binding Backup}"/>
-                            <Button Content="✕" Command="{Binding ClosePanelCommand}"
-                                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"/>
-                        </Grid>
-                    </Border>
-                    <!-- Settings panel -->
-                    <Border Classes="card" IsVisible="{Binding ShowSettingsPanel}" Padding="0"
-                            MaxWidth="820" MaxHeight="620" Margin="28"
-                            HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Grid>
-                            <views:SettingsView DataContext="{Binding Settings}"/>
-                            <Button Content="✕" Command="{Binding ClosePanelCommand}"
-                                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"/>
-                        </Grid>
-                    </Border>
-                </Grid>
-            </Border>
-        </Grid>
+        <!-- Photo grid -->
+        <views:BrowseView Grid.Row="2" DataContext="{Binding Browse}"/>
+
+        <!-- Backup / Settings overlay panels cover the status strip + grid -->
+        <Border Grid.Row="1" Grid.RowSpan="2" IsVisible="{Binding IsPanelOpen}" Background="#B4000000">
+            <Grid>
+                <Border Classes="card" IsVisible="{Binding ShowBackupPanel}" Padding="0"
+                        MaxWidth="820" MaxHeight="620" Margin="28"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Grid>
+                        <views:BackupView DataContext="{Binding Backup}"/>
+                        <Button Content="✕" Command="{Binding ClosePanelCommand}"
+                                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"/>
+                    </Grid>
+                </Border>
+                <Border Classes="card" IsVisible="{Binding ShowSettingsPanel}" Padding="0"
+                        MaxWidth="820" MaxHeight="620" Margin="28"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Grid>
+                        <views:SettingsView DataContext="{Binding Settings}"/>
+                        <Button Content="✕" Command="{Binding ClosePanelCommand}"
+                                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
     </Grid>
 
 </Window>

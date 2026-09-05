@@ -13,6 +13,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private string _ffmpegPath = "ffmpeg";
     [ObservableProperty] private int _gracePeriodDays = 30;
     [ObservableProperty] private int _archiveAfterDays = 180;
+    [ObservableProperty] private int _syncIntervalMinutes = 60;
     [ObservableProperty] private string? _statusMessage;
 
     private AppSettings _base = new(ProjectId: null, BucketName: "", SourceRoots: new List<string>());
@@ -31,6 +32,7 @@ public partial class SettingsViewModel : ObservableObject
         FfmpegPath = s.FfmpegPath;
         GracePeriodDays = s.GracePeriodDays;
         ArchiveAfterDays = s.ArchiveAfterDays;
+        SyncIntervalMinutes = s.SyncIntervalMinutes;
         SourceRoots.Clear();
         foreach (var r in s.SourceRoots) SourceRoots.Add(r);
     }
@@ -41,6 +43,7 @@ public partial class SettingsViewModel : ObservableObject
         SourceRoots = SourceRoots.ToList(),
         GracePeriodDays = GracePeriodDays,
         ArchiveAfterDays = ArchiveAfterDays,
+        SyncIntervalMinutes = SyncIntervalMinutes,
         FfmpegPath = FfmpegPath
     };
 

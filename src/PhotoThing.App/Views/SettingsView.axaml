@@ -65,6 +65,10 @@
               <NumericUpDown Value="{Binding ArchiveAfterDays}" Minimum="1"/>
             </StackPanel>
           </Grid>
+          <StackPanel Spacing="6">
+            <TextBlock Text="Auto-sync every (minutes, 0 = off)" Classes="muted"/>
+            <NumericUpDown Value="{Binding SyncIntervalMinutes}" Minimum="0"/>
+          </StackPanel>
         </StackPanel>
       </Border>
 
