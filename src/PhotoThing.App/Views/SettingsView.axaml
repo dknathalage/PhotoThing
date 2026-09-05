@@ -1,0 +1,37 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:PhotoThing.App.ViewModels"
+             x:Class="PhotoThing.App.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+  <ScrollViewer>
+    <StackPanel Margin="16" Spacing="8">
+      <TextBlock Text="Google Cloud" FontWeight="Bold"/>
+      <TextBox PlaceholderText="Project ID (optional)" Text="{Binding ProjectId}"/>
+      <TextBox PlaceholderText="Bucket name" Text="{Binding BucketName}"/>
+      <TextBox PlaceholderText="ffmpeg path" Text="{Binding FfmpegPath}"/>
+
+      <TextBlock Text="Source folders" FontWeight="Bold" Margin="0,12,0,0"/>
+      <ListBox ItemsSource="{Binding SourceRoots}" Height="120"/>
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <TextBox x:Name="NewFolderBox" PlaceholderText="/path/to/photos" Width="320"/>
+        <Button Content="Add"
+                Command="{Binding AddFolderCommand}"
+                CommandParameter="{Binding #NewFolderBox.Text}"/>
+      </StackPanel>
+
+      <TextBlock Text="Retention" FontWeight="Bold" Margin="0,12,0,0"/>
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <TextBlock Text="Grace days" VerticalAlignment="Center"/>
+        <NumericUpDown Value="{Binding GracePeriodDays}" Minimum="0"/>
+        <TextBlock Text="Archive after days" VerticalAlignment="Center"/>
+        <NumericUpDown Value="{Binding ArchiveAfterDays}" Minimum="1"/>
+      </StackPanel>
+
+      <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,12,0,0">
+        <Button Content="Save" Command="{Binding SaveCommand}"/>
+        <Button Content="Run preflight checks" Command="{Binding RunPreflightCommand}"/>
+      </StackPanel>
+      <TextBlock Text="{Binding StatusMessage}" Foreground="#555" TextWrapping="Wrap"/>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

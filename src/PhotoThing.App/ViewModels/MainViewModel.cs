@@ -4,6 +4,7 @@ namespace PhotoThing.App.ViewModels;
 
 public partial class MainViewModel : ViewModelBase
 {
-    [ObservableProperty]
-    public partial string Greeting { get; set; } = "Welcome to Avalonia!";
+    public SettingsViewModel Settings { get; } = new();
+    public BackupViewModel Backup { get; } = new();
+    public BrowseViewModel Browse { get; } = new();
 }
