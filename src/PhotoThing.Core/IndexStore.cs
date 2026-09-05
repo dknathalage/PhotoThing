@@ -119,6 +119,16 @@ public sealed class IndexStore : IAsyncDisposable, IDisposable
         return list;
     }
 
+    public async Task<IReadOnlyList<string>> GetAllBlobHashesAsync()
+    {
+        var list = new List<string>();
+        await using var cmd = _conn.CreateCommand();
+        cmd.CommandText = "SELECT hash FROM blobs";
+        await using var r = await cmd.ExecuteReaderAsync();
+        while (await r.ReadAsync()) list.Add(r.GetString(0));
+        return list;
+    }
+
     public async Task DeleteBlobAsync(string hash) =>
         await ExecAsync("DELETE FROM blobs WHERE hash=$h", ("$h", hash));
 
