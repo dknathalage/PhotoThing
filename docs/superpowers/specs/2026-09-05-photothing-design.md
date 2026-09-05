@@ -6,7 +6,8 @@
 ## 1. Summary
 
 PhotoThing is a macOS desktop application that backs up and archives photos
-and videos from local folders to a **Google Cloud Storage (GCS)** bucket,
+and videos from local folders to a **Google Cloud Storage (GCS)** bucket
+(desktop GUI built with **Avalonia**),
 authenticating with the machine's **local Application Default Credentials
 (ADC)**. It uses **content-addressed storage** (restic/git-style) for
 automatic deduplication, a local **SQLite index** for folder *and* timeline
@@ -30,9 +31,7 @@ age-based Standard→Archive tiering, and restore-by-download.
 ## 2. Platform & Prerequisites
 
 - **.NET 10** (`dotnet 10.0.400` confirmed on the target machine).
-- **.NET MAUI** GUI targeting **Mac Catalyst**.
-- **Xcode** installed (required by Mac Catalyst).
-- `dotnet workload install maui`.
+- **Avalonia** desktop GUI (no Xcode / Mac Catalyst dependency).
 - **ffmpeg** installed and on `PATH` (hard prerequisite — required for video
   poster-frame thumbnails). Checked at startup with an actionable message if missing.
 - **ADC** configured: `gcloud auth application-default login`.
@@ -43,7 +42,7 @@ age-based Standard→Archive tiering, and restore-by-download.
 Three projects for clean isolation and testability:
 
 - **`PhotoThing.Core`** — class library, no UI. All logic lives here; fully unit-testable.
-- **`PhotoThing.App`** — MAUI GUI (MVVM via CommunityToolkit.Mvvm) wrapping Core services. Thin.
+- **`PhotoThing.App`** — Avalonia GUI (MVVM via CommunityToolkit.Mvvm) wrapping Core services. Thin.
 - **`PhotoThing.Core.Tests`** — xUnit, using an in-memory `IBlobStore` and temp
   SQLite so tests never touch the network.
 
@@ -147,7 +146,7 @@ hash correctness, EXIF-with-mtime-fallback, thumbnail generation, reconcile.
 - Thumbnail: **512px** longest edge, JPEG
 - Parallel uploads: **4**
 
-## 8. GUI (MAUI, MVVM) — pages
+## 8. GUI (Avalonia, MVVM) — pages
 
 - **Setup/Settings** — GCP project, bucket, source folders, defaults; ADC/ffmpeg status.
 - **Dashboard/Backup** — trigger backup, progress, activity log.
