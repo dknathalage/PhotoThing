@@ -53,6 +53,13 @@ public sealed class BackupService
                 deduped++;
             }
 
+            if (existing is not null && existing.Hash != hash)
+            {
+                var oldCount = await _index.AdjustRefCountAsync(existing.Hash, -1);
+                if (oldCount <= 0)
+                    await _index.SetBlobGcAfterAsync(existing.Hash, now.AddDays(_graceDays));
+            }
+
             await _index.UpsertFileAsync(new FileRecord(
                 0, root, file.RelativePath, hash, file.Size, file.ModifiedUtc,
                 _meta.GetCaptureDate(file), FileState.Active, null, now));

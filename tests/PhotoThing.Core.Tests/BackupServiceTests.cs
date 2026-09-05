@@ -98,6 +98,42 @@ public class BackupServiceTests
     }
 
     [Fact]
+    public async Task Modified_file_content_decrements_old_blob_and_schedules_gc()
+    {
+        await using var ws = new TempWorkspace();
+        await using var idx = await ws.OpenIndexAsync();
+        var store = new InMemoryBlobStore();
+        var svc = NewService(idx, store);
+
+        // First backup: 10x10 PNG
+        await WritePngAsync(ws.Root, "a.png", 10, 10);
+        await svc.BackupAsync(ws.Root, Now);
+
+        var files1 = await idx.ListActiveFilesAsync();
+        var oldHash = files1.Single().Hash;
+        (await idx.GetBlobAsync(oldHash))!.RefCount.Should().Be(1);
+
+        // Overwrite with different content (20x20 → different size and hash)
+        await WritePngAsync(ws.Root, "a.png", 20, 20);
+
+        // Second backup one day later
+        var result = await svc.BackupAsync(ws.Root, Now.AddDays(1));
+
+        var files2 = await idx.ListActiveFilesAsync();
+        files2.Should().ContainSingle();
+        var newHash = files2.Single().Hash;
+        newHash.Should().NotBe(oldHash);
+
+        // New blob has refcount 1
+        (await idx.GetBlobAsync(newHash))!.RefCount.Should().Be(1);
+
+        // Old blob refcount dropped to 0 and scheduled for GC
+        var oldBlob = (await idx.GetBlobAsync(oldHash))!;
+        oldBlob.RefCount.Should().Be(0);
+        oldBlob.GcAfter.Should().Be(Now.AddDays(1).AddDays(30));
+    }
+
+    [Fact]
     public async Task SnapshotIndex_uploads_snapshot_and_latest()
     {
         await using var ws = new TempWorkspace();
