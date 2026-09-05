@@ -48,18 +48,22 @@ public static class Preflight
         bool ffmpeg = TryRun(s.FfmpegPath, "-version");
         bool adc = false, bucket = false;
         string? msg = null;
+        GcsBlobStore? store = null;
         try
         {
-            var store = await GcsBlobStore.CreateAsync(s.BucketName, s.ProjectId, ct);
+            store = await GcsBlobStore.CreateAsync(s.BucketName, s.ProjectId, ct);
             adc = true;
             // A cheap list confirms bucket access.
             await foreach (var _ in store.ListAsync("index/", ct)) break;
             bucket = true;
-            store.Dispose();
         }
         catch (Exception e)
         {
             msg = e.Message;
+        }
+        finally
+        {
+            store?.Dispose();
         }
         if (!adc) msg ??= "ADC not found. Run: gcloud auth application-default login";
         if (!ffmpeg) msg ??= $"ffmpeg not found at '{s.FfmpegPath}'. Install ffmpeg and set its path in Settings.";
