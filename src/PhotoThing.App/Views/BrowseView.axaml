@@ -2,50 +2,35 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:PhotoThing.App.ViewModels"
              x:Class="PhotoThing.App.Views.BrowseView"
-             x:DataType="vm:BrowseViewModel">
-  <DockPanel Margin="28,24">
+             x:DataType="vm:BrowseViewModel"
+             Loaded="OnLoaded">
+  <Grid>
+    <TextBlock IsVisible="{Binding IsEmpty}" Classes="muted"
+               HorizontalAlignment="Center" VerticalAlignment="Center"
+               TextAlignment="Center"
+               Text="Nothing here yet.&#x0a;Add folders and a bucket in Settings, then run a Backup."/>
 
-    <StackPanel DockPanel.Dock="Top" Spacing="16">
-      <StackPanel Spacing="3">
-        <TextBlock Text="Browse" Classes="title"/>
-        <TextBlock Text="Your archived library. Thumbnails load without touching cold storage." Classes="muted"/>
-      </StackPanel>
-      <StackPanel Orientation="Horizontal" Spacing="10">
-        <Button Content="Load library" Classes="accent" Command="{Binding LoadCommand}"/>
-        <Button Content="Restore selected" Command="{Binding RestoreSelectedCommand}"/>
-        <TextBlock Text="{Binding StatusMessage}" Classes="muted" VerticalAlignment="Center"/>
-      </StackPanel>
-    </StackPanel>
-
-    <Border Classes="card" Margin="0,16,0,0" Padding="10">
-      <Grid>
-      <TextBlock IsVisible="{Binding IsEmpty}" Classes="muted"
-                 HorizontalAlignment="Center" VerticalAlignment="Center"
-                 TextAlignment="Center"
-                 Text="Nothing here yet.&#x0a;Run a backup, then click Load library."/>
-      <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}"
-               Background="Transparent" BorderThickness="0">
-        <ListBox.ItemsPanel>
-          <ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate>
-        </ListBox.ItemsPanel>
-        <ListBox.ItemTemplate>
-          <DataTemplate x:DataType="vm:PhotoItem">
-            <Border Width="152" Margin="6" CornerRadius="10"
-                    Background="{StaticResource Surface2Brush}"
-                    BorderBrush="{StaticResource HairlineBrush}" BorderThickness="1"
-                    ClipToBounds="True">
-              <StackPanel>
-                <Image Source="{Binding Thumb}" Width="150" Height="132" Stretch="UniformToFill"/>
-                <StackPanel Margin="10,8" Spacing="2">
-                  <TextBlock Text="{Binding Title}" FontSize="12" TextTrimming="CharacterEllipsis"/>
-                  <TextBlock Text="{Binding DateText}" Classes="muted" FontSize="11"/>
-                </StackPanel>
+    <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}"
+             Background="Transparent" BorderThickness="0" Padding="14">
+      <ListBox.ItemsPanel>
+        <ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate>
+      </ListBox.ItemsPanel>
+      <ListBox.ItemTemplate>
+        <DataTemplate x:DataType="vm:PhotoItem">
+          <Border Width="164" Margin="6" CornerRadius="10"
+                  Background="{StaticResource Surface2Brush}"
+                  BorderBrush="{StaticResource HairlineBrush}" BorderThickness="1"
+                  ClipToBounds="True">
+            <StackPanel>
+              <Image Source="{Binding Thumb}" Width="162" Height="140" Stretch="UniformToFill"/>
+              <StackPanel Margin="10,8" Spacing="2">
+                <TextBlock Text="{Binding Title}" FontSize="12" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Text="{Binding DateText}" Classes="muted" FontSize="11"/>
               </StackPanel>
-            </Border>
-          </DataTemplate>
-        </ListBox.ItemTemplate>
-      </ListBox>
-      </Grid>
-    </Border>
-  </DockPanel>
+            </StackPanel>
+          </Border>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+  </Grid>
 </UserControl>

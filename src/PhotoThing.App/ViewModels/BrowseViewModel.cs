@@ -31,23 +31,37 @@ public partial class BrowseViewModel : ObservableObject
         foreach (var old in Items) old.Thumb?.Dispose();
         Items.Clear();
 
-        var settings = AppSettings.Load(SettingsPaths.SettingsFile);
-        await using var svc = await AppServices.CreateAsync(settings);
-        var loader = new ThumbLoader(svc.Store, SettingsPaths.ThumbCache);
-
-        foreach (var rec in await svc.Restore.BrowseAsync())
+        if (!File.Exists(SettingsPaths.SettingsFile))
         {
-            var item = new PhotoItem { Record = rec };
-            Items.Add(item);
-            try
+            IsEmpty = true;
+            StatusMessage = "Open Settings to add a bucket and folders.";
+            return;
+        }
+
+        try
+        {
+            var settings = AppSettings.Load(SettingsPaths.SettingsFile);
+            await using var svc = await AppServices.CreateAsync(settings);
+            var loader = new ThumbLoader(svc.Store, SettingsPaths.ThumbCache);
+
+            foreach (var rec in await svc.Restore.BrowseAsync())
             {
-                var path = await loader.EnsureLocalThumbAsync(rec.Hash);
-                item.Thumb = new Bitmap(path);
+                var item = new PhotoItem { Record = rec };
+                Items.Add(item);
+                try
+                {
+                    var path = await loader.EnsureLocalThumbAsync(rec.Hash);
+                    item.Thumb = new Bitmap(path);
+                }
+                catch { /* leave thumb null if unavailable */ }
             }
-            catch { /* leave thumb null if unavailable */ }
+            StatusMessage = Items.Count == 0 ? "No photos archived yet." : $"{Items.Count} photos";
+        }
+        catch (Exception e)
+        {
+            StatusMessage = $"Couldn't load library: {e.Message}";
         }
         IsEmpty = Items.Count == 0;
-        StatusMessage = Items.Count == 0 ? "No items yet." : $"{Items.Count} items.";
     }
 
     [RelayCommand]
