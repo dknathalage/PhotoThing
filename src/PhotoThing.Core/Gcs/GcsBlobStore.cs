@@ -108,10 +108,16 @@ public sealed class GcsBlobStore : IBlobStore, IDisposable
     /// </remarks>
     public async Task SetLifecycleArchiveAfterAsync(int days, CancellationToken ct = default)
     {
-        var bucket = await _client.GetBucketAsync(_bucket, cancellationToken: ct);
-        bucket.Lifecycle = LifecycleManager.ToGoogleLifecycle(
-            LifecycleManager.BuildArchiveAfterRule(days));
-        await _client.UpdateBucketAsync(bucket, cancellationToken: ct);
+        // PATCH only the lifecycle field. A full GetBucket + UpdateBucket (PUT) echoes
+        // back output-only fields the bucket carries (satisfiesPzs, encryption
+        // enforcement, etc.), which GCS rejects with 400 "Invalid argument".
+        var patch = new Google.Apis.Storage.v1.Data.Bucket
+        {
+            Name = _bucket,
+            Lifecycle = LifecycleManager.ToGoogleLifecycle(
+                LifecycleManager.BuildArchiveAfterRule(days)),
+        };
+        await _client.PatchBucketAsync(patch, cancellationToken: ct);
     }
 
     public void Dispose() => _client.Dispose();
