@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/PhotoThing.App/PhotoThing.App.csproj" />
     <Project Path="src/PhotoThing.Core/PhotoThing.Core.csproj" />
   </Folder>
   <Folder Name="/tests/">
