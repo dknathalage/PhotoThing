@@ -1,0 +1,29 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="using:PhotoThing.App.Views"
+        xmlns:vm="using:PhotoThing.App.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="640"
+        x:Class="PhotoThing.App.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="PhotoThing" Width="900" Height="640">
+
+    <Design.DataContext>
+        <vm:MainViewModel />
+    </Design.DataContext>
+
+    <TabControl>
+        <TabItem Header="Settings">
+            <views:SettingsView DataContext="{Binding Settings}"/>
+        </TabItem>
+        <TabItem Header="Backup">
+            <views:BackupView DataContext="{Binding Backup}"/>
+        </TabItem>
+        <TabItem Header="Browse">
+            <views:BrowseView DataContext="{Binding Browse}"/>
+        </TabItem>
+    </TabControl>
+
+</Window>

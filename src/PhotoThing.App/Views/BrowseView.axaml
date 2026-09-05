@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:PhotoThing.App.ViewModels"
+             x:Class="PhotoThing.App.Views.BrowseView"
+             x:DataType="vm:BrowseViewModel">
+  <DockPanel Margin="16">
+    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12">
+      <Button Content="Load library" Command="{Binding LoadCommand}"/>
+      <Button Content="Restore selected" Command="{Binding RestoreSelectedCommand}"/>
+      <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center"/>
+    </StackPanel>
+    <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}"
+             Margin="0,12,0,0">
+      <ListBox.ItemsPanel>
+        <ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate>
+      </ListBox.ItemsPanel>
+      <ListBox.ItemTemplate>
+        <DataTemplate x:DataType="vm:PhotoItem">
+          <StackPanel Width="140" Margin="6">
+            <Image Source="{Binding Thumb}" Width="128" Height="128" Stretch="UniformToFill"/>
+            <TextBlock Text="{Binding DateText}" FontSize="11" Foreground="#666"/>
+            <TextBlock Text="{Binding Title}" FontSize="11" TextTrimming="CharacterEllipsis"/>
+          </StackPanel>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+  </DockPanel>
+</UserControl>

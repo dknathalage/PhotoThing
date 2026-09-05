@@ -1,0 +1,15 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:PhotoThing.App.ViewModels"
+             x:Class="PhotoThing.App.Views.BackupView"
+             x:DataType="vm:BackupViewModel">
+  <DockPanel Margin="16">
+    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12">
+      <Button Content="Run backup" Command="{Binding RunBackupCommand}"/>
+      <ProgressBar IsIndeterminate="{Binding IsRunning}" Width="160"
+                   IsVisible="{Binding IsRunning}"/>
+      <TextBlock Text="{Binding Summary}" VerticalAlignment="Center"/>
+    </StackPanel>
+    <ListBox ItemsSource="{Binding Log}" Margin="0,12,0,0"/>
+  </DockPanel>
+</UserControl>
