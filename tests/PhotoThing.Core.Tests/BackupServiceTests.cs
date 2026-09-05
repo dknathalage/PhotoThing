@@ -96,4 +96,18 @@ public class BackupServiceTests
         blob.RefCount.Should().Be(0);
         blob.GcAfter.Should().Be(Now.AddDays(1).AddDays(30));
     }
+
+    [Fact]
+    public async Task SnapshotIndex_uploads_snapshot_and_latest()
+    {
+        await using var ws = new TempWorkspace();
+        await using var idx = await ws.OpenIndexAsync();
+        var store = new InMemoryBlobStore();
+        var svc = NewService(idx, store);
+
+        await svc.SnapshotIndexAsync(ws.DbPath, "20260905T101500Z");
+
+        store.Objects.Keys.Should().Contain("index/snapshot-20260905T101500Z.db");
+        store.Objects.Keys.Should().Contain("index/latest.db");
+    }
 }

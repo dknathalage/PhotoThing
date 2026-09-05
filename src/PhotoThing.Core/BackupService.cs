@@ -91,4 +91,19 @@ public sealed class BackupService
         }
         return stale.Count;
     }
+
+    public async Task SnapshotIndexAsync(string dbPath, string utcStamp, CancellationToken ct = default)
+    {
+        // Copy first so we upload a stable file even while the live DB is open (WAL).
+        var temp = Path.Combine(Path.GetTempPath(), $"pt-snap-{utcStamp}.db");
+        File.Copy(dbPath, temp, overwrite: true);
+        try
+        {
+            await using (var s = File.OpenRead(temp))
+                await _store.PutAsync(ObjectNames.Snapshot(utcStamp), s, "application/x-sqlite3", storageClass: "STANDARD", ct: ct);
+            await using (var s = File.OpenRead(temp))
+                await _store.PutAsync(ObjectNames.LatestIndex, s, "application/x-sqlite3", storageClass: "STANDARD", ct: ct);
+        }
+        finally { File.Delete(temp); }
+    }
 }
